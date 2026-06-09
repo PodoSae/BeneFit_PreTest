@@ -1,0 +1,87 @@
+{
+  "machineId": "VM-2026-A1",
+  "status": "active",
+  "updatedAt": "2026-04-20T15:00:00Z",
+  "products": [
+    {
+      "id": 101,
+      "name": "Energy Drink",
+      "price": 1500,
+      "stock": 10,
+      "type": "drink",
+      "imageUrl": "images/energy_drink"
+    },
+    {
+      "id": 102,
+      "name": "Multi Vitamin Water",
+      "price": 2000,
+      "stock": 0,
+      "type": "health",
+      "imageUrl": "images/vitamin_water"
+    },
+    {
+      "id": 103,
+      "name": "Choco Protein Shake",
+      "price": 3500,
+      "stock": 5,
+      "type": "health",
+      "imageUrl": "images/protein_choco"
+    },
+    {
+      "id": 104,
+      "name": "Zero Cola",
+      "price": 1200,
+      "stock": 20,
+      "type": "drink",
+      "imageUrl": "images/zero_cola"
+    },
+    {
+      "id": 105,
+      "name": "Ion Active Water",
+      "price": 1800,
+      "stock": 15,
+      "type": "drink",
+      "imageUrl": "images/sports_drink"
+    },
+    {
+      "id": 106,
+      "name": "Probiotics Kombucha",
+      "price": 2500,
+      "stock": 8,
+      "type": "health",
+      "imageUrl": "images/kombucha"
+    },
+    {
+      "id": 107,
+      "name": "Cold Brew Black",
+      "price": 2200,
+      "stock": 30,
+      "type": "coffee",
+      "imageUrl": "images/coldbrew_black"
+    },
+    {
+      "id": 108,
+      "name": "BCAA Amino Water",
+      "price": 2800,
+      "stock": 12,
+      "type": "health",
+      "imageUrl": "images/bcaa_water"
+    },
+    {
+      "id": 109,
+      "name": "Organic Decaf Green Tea",
+      "price": 1500,
+      "stock": 0,
+      "type": "tea",
+      "imageUrl": "images/decaf_greentea"
+    },
+    {
+      "id": 110,
+      "name": "Premium Red Ginseng Extract",
+      "price": 5000,
+      "stock": 3,
+      "type": "health",
+      "imageUrl": "images/red_ginseng"
+    }
+  ]
+}
