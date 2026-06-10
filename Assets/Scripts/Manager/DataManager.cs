@@ -9,6 +9,8 @@ public class DataManager : MonoBehaviour
 
     public VendingMachineData Data => m_parseData;
 
+    
+
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -66,4 +68,46 @@ public class DataManager : MonoBehaviour
             Debug.LogError("Items.json 파싱 실패");
         }
     }
+
+    public Sprite LoadImg(string imagePath)
+    {
+        string path = Path.Combine(Application.streamingAssetsPath,imagePath);
+
+        if (!File.Exists(path))
+        {
+            Debug.LogWarning($"이미지 없음 : {path}");
+
+            // Fallback
+            return Resources.Load<Sprite>(Path.GetFileNameWithoutExtension(imagePath));
+        }
+
+        byte[] imageBytes = File.ReadAllBytes(path);
+
+        Texture2D texture = new Texture2D(2, 2);
+
+        if (!texture.LoadImage(imageBytes))
+        {
+            Debug.LogError($"이미지 로드 실패 : {path}");
+            return null;
+        }
+
+        return Sprite.Create(
+            texture,
+            new Rect(0, 0, texture.width, texture.height),
+            new Vector2(0.5f, 0.5f),
+            100f);
+    }
+
+    public ProductData GetProduct(int _id)
+    {
+        foreach (ProductData data in m_parseData.products)
+        {
+            if (data.id == _id)
+                return data;
+        }
+
+        Debug.LogWarning($"상품 없음: {_id}");
+        return null;
+    }
+
 }

@@ -1,3 +1,4 @@
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -9,13 +10,21 @@ public class UI_VMItem : MonoBehaviour
     [SerializeField] private TextMeshProUGUI m_textStock;
     [SerializeField] private Image m_imgVM;
 
-    public void Initialize(ProductData _product)
+    [SerializeField] private Button m_buttonVMItem;
+
+    public Action<int> OnClickVMItem;
+
+    public void Initialize(int _id, string _name,  int _price , int _stock)
     {
-        m_textName.text = _product.name;
-        m_textPrice.text = string.Format("{0} Won", _product.price);
-        m_textStock.text = string.Format("{0} ea", _product.stock);
+        m_textName.text = _name;
+        m_textPrice.text = string.Format("{0} Won", _price);
+        m_textStock.text = string.Format("{0} ea", _stock);
 
-        m_imgVM.sprite = Resources.Load<Sprite>(_product.name);
+        m_buttonVMItem.onClick.AddListener(() => OnClickVMItem?.Invoke(_id));
+    }
 
+    public void InitImage(Sprite _sprite)
+    {
+        m_imgVM.sprite = _sprite;
     }
 }

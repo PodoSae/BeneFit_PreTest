@@ -1,16 +1,13 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.Collections.Generic;
 
-public class UI_VendingMachine : MonoBehaviour
+public class UI_VMInfo : MonoBehaviour
 {
     [Header("Top")]
     [SerializeField] private TextMeshProUGUI m_idText;
     [SerializeField] private Image powerLight;
-
-    [Header("Body")]
-    [SerializeField] private Transform m_parentProduct;
-    [SerializeField] private UI_VMItem m_itemVM;
 
     public void Initialize(VendingMachineData _data)
     {
@@ -21,14 +18,5 @@ public class UI_VendingMachine : MonoBehaviour
         powerLight.color = isActive
                 ? Color.green
                 : Color.red;       
-
-        foreach (var product in DataManager.Instance.Data.products)
-        {
-            var item = Instantiate(m_itemVM, m_parentProduct);
-
-            item.Initialize(product);
-        }
-
-
     }
 }
