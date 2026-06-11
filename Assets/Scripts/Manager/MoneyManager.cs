@@ -5,7 +5,8 @@ public class MoneyManager : MonoBehaviour
 {
     public static MoneyManager Instance;
 
-    public int CurrentMoney { get; private set; }
+    private int m_currentMoney;
+    public int CurrentMoney => m_currentMoney;
 
     public event Action<int> OnMoneyChanged;
 
@@ -22,21 +23,21 @@ public class MoneyManager : MonoBehaviour
 
     public void AddMoney(int amount)
     {
-        CurrentMoney += amount;
+        m_currentMoney += amount;
 
-        CurrentMoney = Mathf.Min(CurrentMoney, 10000);
+        m_currentMoney = Mathf.Min(m_currentMoney, 10000);
 
-        OnMoneyChanged?.Invoke(CurrentMoney);
+        OnMoneyChanged?.Invoke(m_currentMoney);
     }
 
     public bool TrySpend(int amount)
     {
-        if (CurrentMoney < amount)
+        if (m_currentMoney < amount)
             return false;
 
-        CurrentMoney -= amount;
+        m_currentMoney -= amount;
 
-        OnMoneyChanged?.Invoke(CurrentMoney);
+        OnMoneyChanged?.Invoke(m_currentMoney);
         return true;
     }
 }

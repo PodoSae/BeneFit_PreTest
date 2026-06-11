@@ -22,7 +22,7 @@ public class UI_VMItem : MonoBehaviour
 
         m_buttonVMItem.onClick.AddListener(() => OnClickVMItem?.Invoke(_id));
     }
-
+    
     public void InitImage(Sprite _sprite)
     {
         m_imgVM.sprite = _sprite;

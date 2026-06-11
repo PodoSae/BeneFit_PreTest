@@ -129,7 +129,6 @@ GameObject:
   m_Component:
   - component: {fileID: 29246042}
   - component: {fileID: 29246043}
-  - component: {fileID: 29246044}
   m_Layer: 5
   m_Name: Content
   m_TagString: Untagged
@@ -153,8 +152,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0.00013132792}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0.0000078817475}
+  m_SizeDelta: {x: 0, y: 300}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &29246043
 MonoBehaviour:
@@ -181,21 +180,7 @@ MonoBehaviour:
   m_ChildControlHeight: 0
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
-  m_ReverseArrangement: 1
---- !u!114 &29246044
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 29246041}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3245ec927659c4140ac4f8d17403cc18, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.ContentSizeFitter
-  m_HorizontalFit: 0
-  m_VerticalFit: 2
+  m_ReverseArrangement: 0
 --- !u!1 &51841018
 GameObject:
   m_ObjectHideFlags: 0
@@ -1244,7 +1229,6 @@ MonoBehaviour:
   m_uiProductList: {fileID: 555922592}
   m_uiMoney: {fileID: 737311859}
   m_uiInventory: {fileID: 785990606}
-  m_uiLogList: {fileID: 1515740961}
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -2175,50 +2159,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::UI_InventoryList
   m_parentInventory: {fileID: 1796123738}
   m_itemInventory: {fileID: 3800824535123656398, guid: e86f0d14f0b1b9246b5cbcc072812c1c, type: 3}
---- !u!1 &811481676
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 811481677}
-  - component: {fileID: 811481678}
-  m_Layer: 0
-  m_Name: LogManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &811481677
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 811481676}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 2066799918}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &811481678
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 811481676}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2c9118450147b0146a7825ac14b6a574, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::LogManager
 --- !u!1 &828361032
 GameObject:
   m_ObjectHideFlags: 0
@@ -3107,7 +3047,6 @@ GameObject:
   - component: {fileID: 1515740960}
   - component: {fileID: 1515740959}
   - component: {fileID: 1515740958}
-  - component: {fileID: 1515740961}
   m_Layer: 5
   m_Name: Scroll View
   m_TagString: Untagged
@@ -3204,20 +3143,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1515740956}
   m_CullTransparentMesh: 1
---- !u!114 &1515740961
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1515740956}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0293d3cf0147f974299b1ee1736eda24, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::UI_LogList
-  m_parentLog: {fileID: 29246042}
-  m_itemLog: {fileID: 5201933399650109494, guid: 6c6d21f20ebe26246976ed240235eb8a, type: 3}
 --- !u!1 &1523044026
 GameObject:
   m_ObjectHideFlags: 0
@@ -3300,7 +3225,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 290492717}
   m_HandleRect: {fileID: 290492716}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -3809,7 +3734,6 @@ Transform:
   - {fileID: 497694881}
   - {fileID: 1095229342}
   - {fileID: 1481959631}
-  - {fileID: 811481677}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2129156592

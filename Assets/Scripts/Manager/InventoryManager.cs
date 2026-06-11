@@ -9,7 +9,6 @@ public class InventoryManager : MonoBehaviour
     Dictionary<int, InventoryItem> m_dicInventoryItem = new Dictionary<int, InventoryItem>();
 
     public event Action<InventoryItem> OnAddItem;
-    public event Action<InventoryItem> OnUseItem;
 
     private void Awake()
     {
@@ -58,14 +57,8 @@ public class InventoryManager : MonoBehaviour
         if (m_dicInventoryItem.ContainsKey(_id))
             return m_dicInventoryItem[_id].stock;
         else
-            return -99;
+            return 0;
     }
 
 }
 
-[Serializable]
-public class InventoryItem
-{ 
-    public int productid;
-    public int stock;
-}

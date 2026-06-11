@@ -31,7 +31,6 @@ public class UI_InventoryList : MonoBehaviour
         item.OnClickInvenItem += UseInventoryItem;
         item.Refresh(_item);
 
-        
     }
 
     private void UseInventoryItem(int _id)
@@ -44,5 +43,4 @@ public class UI_InventoryList : MonoBehaviour
     {
         return m_dicInventoryItem.ContainsKey(_id);
     }
-
 }

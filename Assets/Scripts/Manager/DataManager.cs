@@ -7,8 +7,10 @@ public class DataManager : MonoBehaviour
 
     private VendingMachineData m_parseData;
 
-    public VendingMachineData Data => m_parseData;
+    private bool m_isActive;
 
+    public VendingMachineData Data => m_parseData;
+    public bool IsActive => m_isActive;
     
 
     private void Awake()
@@ -24,6 +26,7 @@ public class DataManager : MonoBehaviour
         LoadData();
     }
 
+    #region Load & Save
 
     private void LoadData()
     {
@@ -67,6 +70,10 @@ public class DataManager : MonoBehaviour
         {
             Debug.LogError("Items.json ÆÄ½Ì ½ÇÆÐ");
         }
+
+        m_isActive = m_parseData != null &&
+            !string.IsNullOrEmpty(m_parseData.status) &&
+            m_parseData.status.ToLower() == "active";
     }
 
     public Sprite LoadImg(string imagePath)
@@ -97,7 +104,10 @@ public class DataManager : MonoBehaviour
             new Vector2(0.5f, 0.5f),
             100f);
     }
+    #endregion
 
+
+    #region function
     public ProductData GetProduct(int _id)
     {
         foreach (ProductData data in m_parseData.products)
@@ -110,4 +120,5 @@ public class DataManager : MonoBehaviour
         return null;
     }
 
+    #endregion
 }

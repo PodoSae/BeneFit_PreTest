@@ -9,13 +9,11 @@ public class UI_VMInfo : MonoBehaviour
     [SerializeField] private TextMeshProUGUI m_idText;
     [SerializeField] private Image powerLight;
 
-    public void Initialize(VendingMachineData _data)
+    public void Initialize(InfoViewData _data)
     {
-        m_idText.text = _data.machineId;
+        m_idText.text = _data.machineId.ToString();
 
-        bool isActive = _data.status.ToLower() == "active";
-
-        powerLight.color = isActive
+        powerLight.color = _data.isActive
                 ? Color.green
                 : Color.red;       
     }
