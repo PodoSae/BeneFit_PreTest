@@ -21,6 +21,12 @@ public class MoneyManager : MonoBehaviour
         Instance = this;
     }
 
+    public void SetMoney(int money)
+    {
+        m_currentMoney = Mathf.Clamp(money, 0, 10000);
+        OnMoneyChanged?.Invoke(m_currentMoney);
+    }
+
     public void AddMoney(int amount)
     {
         m_currentMoney += amount;

@@ -1,3 +1,5 @@
+using NUnit.Framework;
+using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
@@ -5,13 +7,29 @@ public class DataManager : MonoBehaviour
 {
     public static DataManager Instance;
 
-    private VendingMachineData m_parseData;
+    private const string ITEM_DATA_FILE_NAME = "Items.json";
+    private const string USER_DATA_FILE_NAME = "UserData.json";
+
+    private string ItemDataPath
+    {
+        get { return Path.Combine(Application.persistentDataPath, ITEM_DATA_FILE_NAME); }
+    }
+
+    private string UserDataPath
+    {
+        get { return Path.Combine(Application.persistentDataPath, USER_DATA_FILE_NAME); }
+    }
+
+    private VendingMachineData m_itemsData;
+    private UserData m_userData;
 
     private bool m_isActive;
 
-    public VendingMachineData Data => m_parseData;
+    public VendingMachineData ItemData => m_itemsData;
+    public UserData UserData => m_userData;
     public bool IsActive => m_isActive;
-    
+
+
 
     private void Awake()
     {
@@ -30,50 +48,110 @@ public class DataManager : MonoBehaviour
 
     private void LoadData()
     {
-        string json = LoadJson();
+        string jsonitems = LoadJsonItems();
 
-        if (string.IsNullOrEmpty(json))
+        if (string.IsNullOrEmpty(jsonitems))
             return;
 
-        ParseData(json);
+        ParseItemsData(jsonitems);
+
+        string jsonUser = LoadUserDatas();
+
+        ParseUserData(jsonUser);
     }
 
-    private string LoadJson()
+
+    private string LoadJsonItems()
     {
-        // Items 데이터 변경 가능성이 있음 - StreamingAssets 우선 사용, 파일 없을 시 기본 Items 사용
+        //ItemDataPath 우선 사용, 파일 없을 시 기본 Items 사용
 
-        string path = Path.Combine(Application.streamingAssetsPath,"Items.json");
-
-        if (File.Exists(path))
+        if (File.Exists(ItemDataPath))
         {
-            Debug.Log("Use Streaming Data");
-            return File.ReadAllText(path);
+            Debug.Log("Use Persistent Items Data");
+            return File.ReadAllText(ItemDataPath);
         }
 
         TextAsset textAsset = Resources.Load<TextAsset>("Items");
 
         if (textAsset == null)
         {
-            Debug.LogError("Items.json 로드 실패");
+            Debug.LogError("Resources Items.json Load Fail");
             return string.Empty;
         }
 
-        Debug.Log("Use Resource Data");
+        Debug.Log("Use Resources Items Data");
         return textAsset.text;
     }
 
-    private void ParseData(string json)
+   
+    private void ParseItemsData(string json)
     {
-        m_parseData = JsonUtility.FromJson<VendingMachineData>(json);
+        m_itemsData = JsonUtility.FromJson<VendingMachineData>(json);
 
-        if (m_parseData == null)
+        if (m_itemsData == null)
         {
             Debug.LogError("Items.json 파싱 실패");
         }
 
-        m_isActive = m_parseData != null &&
-            !string.IsNullOrEmpty(m_parseData.status) &&
-            m_parseData.status.ToLower() == "active";
+        m_isActive = m_itemsData != null &&
+            !string.IsNullOrEmpty(m_itemsData.status) &&
+            m_itemsData.status.ToLower() == "active";
+    }
+
+    public void SaveItemsData()
+    {
+        if (m_itemsData == null)
+            return;
+
+        string json = JsonUtility.ToJson(m_itemsData, true);
+        File.WriteAllText(ItemDataPath, json);
+
+        Debug.Log("Items Save Success : " + ItemDataPath);
+    }
+
+    private string LoadUserDatas()
+    {
+        if (File.Exists(UserDataPath))
+        {
+            Debug.Log("Use Persistent Items Data");
+            return File.ReadAllText(UserDataPath);
+        }
+
+        return string.Empty;
+    }
+
+    private void ParseUserData(string json)
+    {
+        if (json == string.Empty)
+        { 
+            m_userData = new UserData();
+            return;
+        }
+
+        m_userData = JsonUtility.FromJson<UserData>(json);
+
+        if (m_userData == null)
+        {
+            Debug.LogError("Items.json 파싱 실패");
+        }
+    }
+
+
+    public void SaveUserData(UserData userData)
+    {
+        string json = JsonUtility.ToJson(userData, true);
+        File.WriteAllText(UserDataPath, json);
+
+        Debug.Log("UserData Save Success : " + UserDataPath);
+    }
+
+    public void SaveUserData()
+    {
+
+        string json = JsonUtility.ToJson(m_userData, true);
+        File.WriteAllText(UserDataPath, json);
+
+        Debug.Log("UserData Save Success : " + UserDataPath);
     }
 
     public Sprite LoadImg(string imagePath)
@@ -110,7 +188,7 @@ public class DataManager : MonoBehaviour
     #region function
     public ProductData GetProduct(int _id)
     {
-        foreach (ProductData data in m_parseData.products)
+        foreach (ProductData data in m_itemsData.products)
         {
             if (data.id == _id)
                 return data;
@@ -118,6 +196,34 @@ public class DataManager : MonoBehaviour
 
         Debug.LogWarning($"상품 없음: {_id}");
         return null;
+    }
+
+    public bool DecreaseStock(int _id)
+    {
+        foreach (ProductData data in m_itemsData.products)
+        {
+            if (data.id == _id)
+            {
+                if (data.stock > 0)
+                {
+                    --data.stock;
+                    return true;
+                }
+                else
+                    return false;
+            }
+        }
+        return false;
+    }
+
+    public void SetUserData_Inventory(List<InventoryItem> _list)
+    {
+        m_userData.inventoryItems = _list;
+    }
+
+    public void SetUserData_Money(int _money)
+    {
+        m_userData.money = _money;
     }
 
     #endregion

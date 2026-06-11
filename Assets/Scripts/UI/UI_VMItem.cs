@@ -27,4 +27,9 @@ public class UI_VMItem : MonoBehaviour
     {
         m_imgVM.sprite = _sprite;
     }
+
+    public void RefreshStock(int stock)
+    {
+        m_textStock.text = string.Format("{0} ea", stock);
+    }
 }

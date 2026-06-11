@@ -21,6 +21,26 @@ public class InventoryManager : MonoBehaviour
         Instance = this;
     }
 
+    public void SetInventoryItems(List<InventoryItem> items)
+    {
+        m_dicInventoryItem.Clear();
+
+        if (items == null)
+            return;
+
+        foreach (InventoryItem item in items)
+        {
+            if (item.stock <= 0)
+                continue;
+
+            m_dicInventoryItem[item.productid] = new InventoryItem()
+            {
+                productid = item.productid,
+                stock = item.stock
+            };
+        }
+    }
+
     public void AddItem(int _id)
     {
         if (m_dicInventoryItem.ContainsKey(_id))
@@ -58,6 +78,25 @@ public class InventoryManager : MonoBehaviour
             return m_dicInventoryItem[_id].stock;
         else
             return 0;
+    }
+
+    public List<InventoryItem> GetAllInventoryItems()
+    {
+        List<InventoryItem> listItems = new List<InventoryItem>();
+
+        foreach (InventoryItem item in m_dicInventoryItem.Values)
+        {
+            if (item.stock > 0)
+            {
+                listItems.Add(new InventoryItem()
+                {
+                    productid = item.productid,
+                    stock = item.stock
+                });
+            }
+        }
+
+        return listItems;
     }
 
 }

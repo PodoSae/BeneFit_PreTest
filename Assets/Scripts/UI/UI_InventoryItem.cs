@@ -28,4 +28,5 @@ public class UI_InventoryItem : MonoBehaviour
     { 
         m_textStock.text = string.Format("{0} ea", _stock);
     }
+
 }

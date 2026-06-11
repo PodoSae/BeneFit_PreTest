@@ -15,6 +15,8 @@ public class VmController : MonoBehaviour
     {
         InitLog();
 
+        ApplyUserData();
+
         InitInfo();
         InitProductList();
         InitMoney();
@@ -23,12 +25,23 @@ public class VmController : MonoBehaviour
 
     private void OnDestroy()
     {
-        InventoryManager.Instance.OnAddItem -= RefreshInventory;    
-        LogManager.Instance.OnAddLog -= m_uiLogList.AddLog;         
-        m_uiInventory.OnUseInventoryItem -= UseInventory;           
-        m_uiMoney.OnClickAddMoney -= AddMoney;                      
-        m_uiProductList.OnSelectProduct -= BuyProduct;              
+        InventoryManager.Instance.OnAddItem -= RefreshInventory;
+        LogManager.Instance.OnAddLog -= m_uiLogList.AddLog;
+        m_uiInventory.OnUseInventoryItem -= UseInventory;
+        m_uiMoney.OnClickAddMoney -= AddMoney;
+        m_uiProductList.OnSelectProduct -= BuyProduct;
         MoneyManager.Instance.OnMoneyChanged -= m_uiMoney.RefreshUI;
+    }
+
+    private void ApplyUserData()
+    {
+        UserData userData = DataManager.Instance.UserData;
+
+        if (userData == null)
+            return;
+
+        MoneyManager.Instance.SetMoney(userData.money);
+        InventoryManager.Instance.SetInventoryItems(userData.inventoryItems);
     }
 
     #endregion
@@ -37,7 +50,7 @@ public class VmController : MonoBehaviour
     #region Info
     private void InitInfo()
     {
-        InfoViewData data = new InfoViewData() { machineId = DataManager.Instance.Data.machineId, isActive = DataManager.Instance.IsActive };
+        InfoViewData data = new InfoViewData() { machineId = DataManager.Instance.ItemData.machineId, isActive = DataManager.Instance.IsActive };
 
         m_uiVM.Initialize(data);
 
@@ -52,14 +65,14 @@ public class VmController : MonoBehaviour
         List<ProductViewData> m_listProductViewData = new List<ProductViewData>();
 
         // Product Init
-        foreach (ProductData data in DataManager.Instance.Data.products)
+        foreach (ProductData data in DataManager.Instance.ItemData.products)
         {
             Sprite itemImg = DataManager.Instance.LoadImg(data.imageUrl);
 
             if (itemImg == null)
                 itemImg = DataManager.Instance.LoadImg(data.name);
 
-            m_listProductViewData.Add(new ProductViewData() {productId = data.id, productName = data.name, productPrice = data.price, productStock = data.stock, productSprite = itemImg });
+            m_listProductViewData.Add(new ProductViewData() { productId = data.id, productName = data.name, productPrice = data.price, productStock = data.stock, productSprite = itemImg });
         }
 
         m_uiProductList.Initialize(m_listProductViewData);
@@ -87,19 +100,26 @@ public class VmController : MonoBehaviour
         if (data.stock <= 0)
         {
             // 재고가 있는지 확인
-            LogManager.Instance.AddLog(string.Format("Buy Fail - Has no Product Stock. Id: {0}", _productId) , LogState.Error);
+            LogManager.Instance.AddLog(string.Format("Buy Fail - Has no Product Stock. Id: {0}", _productId), LogState.Error);
             return;
         }
 
         if (MoneyManager.Instance.TrySpend(data.price))
-        {
-            // 구매 성공
-            LogManager.Instance.AddLog(string.Format("Buy Success. Id: {0}", _productId));
-            
-            // inventory 추가
-            InventoryManager.Instance.AddItem(data.id);
+        {   
             // 재고 감소  - 저장
+            if (DataManager.Instance.DecreaseStock(data.id))
+            {
+                m_uiProductList.RefreshStock(data.id, data.stock);
+                
+                // inventory 추가
+                InventoryManager.Instance.AddItem(data.id);
+                SaveMoney();
+                SaveInventory();
+                DataManager.Instance.SaveItemsData();
 
+                // 구매 성공
+                LogManager.Instance.AddLog(string.Format("Buy Success. Id: {0}", _productId));
+            }
         }
         else
         {
@@ -115,6 +135,8 @@ public class VmController : MonoBehaviour
     {
         m_uiMoney.OnClickAddMoney += AddMoney;
         MoneyManager.Instance.OnMoneyChanged += m_uiMoney.RefreshUI;
+
+        m_uiMoney.RefreshUI(MoneyManager.Instance.CurrentMoney);
     }
 
     private void AddMoney(int _amount)
@@ -134,7 +156,10 @@ public class VmController : MonoBehaviour
         int gap = MoneyManager.Instance.CurrentMoney - before;
 
         if (gap > 0)
+        { 
             LogManager.Instance.AddLog(string.Format("Add Money Success : {0} won", gap));
+            SaveMoney();
+        }
         else
             LogManager.Instance.AddLog("Add Money Fail - Max Money", LogState.Error);
     }
@@ -145,8 +170,12 @@ public class VmController : MonoBehaviour
     private void InitInventory()
     {
         InventoryManager.Instance.OnAddItem += RefreshInventory;
-
         m_uiInventory.OnUseInventoryItem += UseInventory;
+
+        foreach (InventoryItem item in InventoryManager.Instance.GetAllInventoryItems())
+        {
+            RefreshInventory(item);
+        }
     }
 
     private void RefreshInventory(InventoryItem _item)
@@ -173,15 +202,17 @@ public class VmController : MonoBehaviour
             InventoryViewData inventoryData = new InventoryViewData() { productId = _item.productid, productName = data.name, productStock = _item.stock, productSprite = itemImg };
             m_uiInventory.Initialize(inventoryData);
         }
+
+        SaveInventory();
     }
 
     private void UseInventory(int _id)
     {
-if (!DataManager.Instance.IsActive)
-{
-    LogManager.Instance.AddLog("Action blocked - Machine is inactive", LogState.Error);
-    return;
-}
+        if (!DataManager.Instance.IsActive)
+        {
+            LogManager.Instance.AddLog("Action blocked - Machine is inactive", LogState.Error);
+            return;
+        }
 
         if (InventoryManager.Instance.TryUseItem(_id))
         {
@@ -190,13 +221,29 @@ if (!DataManager.Instance.IsActive)
 
             m_uiInventory.RefreshStock(item);
 
+            SaveInventory();
             LogManager.Instance.AddLog(string.Format("Use Inventory Item. Id: {0}", _id));
         }
         else
-        { 
+        {
             // 아이템 사용 안됨 ui refresh
         }
     }
+
+    public void SaveInventory()
+    {
+        List<InventoryItem> items = InventoryManager.Instance.GetAllInventoryItems();
+        DataManager.Instance.SetUserData_Inventory(items);
+        DataManager.Instance.SaveUserData();
+    }
+
+    public void SaveMoney()
+    {
+        int money = MoneyManager.Instance.CurrentMoney;
+        DataManager.Instance.SetUserData_Money(money);
+        DataManager.Instance.SaveUserData();
+    }
+    
     #endregion
 
     #region Log
