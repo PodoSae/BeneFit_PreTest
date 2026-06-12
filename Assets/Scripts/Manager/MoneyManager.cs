@@ -21,6 +21,7 @@ public class MoneyManager : MonoBehaviour
         Instance = this;
     }
 
+    #region Function
     public void SetMoney(int money)
     {
         m_currentMoney = Mathf.Clamp(money, 0, 10000);
@@ -46,4 +47,5 @@ public class MoneyManager : MonoBehaviour
         OnMoneyChanged?.Invoke(m_currentMoney);
         return true;
     }
+    #endregion
 }

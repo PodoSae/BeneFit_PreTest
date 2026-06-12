@@ -10,6 +10,7 @@ public class VmController : MonoBehaviour
     [SerializeField] private UI_InventoryList m_uiInventory;
     [SerializeField] private UI_LogList m_uiLogList;
 
+    
     #region Unity Base
     void Start()
     {
@@ -25,12 +26,23 @@ public class VmController : MonoBehaviour
 
     private void OnDestroy()
     {
-        InventoryManager.Instance.OnAddItem -= RefreshInventory;
-        LogManager.Instance.OnAddLog -= m_uiLogList.AddLog;
-        m_uiInventory.OnUseInventoryItem -= UseInventory;
-        m_uiMoney.OnClickAddMoney -= AddMoney;
-        m_uiProductList.OnSelectProduct -= BuyProduct;
-        MoneyManager.Instance.OnMoneyChanged -= m_uiMoney.RefreshUI;
+        if (InventoryManager.Instance != null)
+            InventoryManager.Instance.OnAddItem -= RefreshInventory;
+
+        if (LogManager.Instance != null)
+            LogManager.Instance.OnAddLog -= m_uiLogList.AddLog;
+
+        if (m_uiInventory != null)
+            m_uiInventory.OnUseInventoryItem -= UseInventory;
+
+        if (m_uiMoney != null)
+            m_uiMoney.OnClickAddMoney -= AddMoney;
+
+        if (m_uiProductList != null)
+            m_uiProductList.OnSelectProduct -= BuyProduct;
+
+        if (MoneyManager.Instance != null)
+            MoneyManager.Instance.OnMoneyChanged -= m_uiMoney.RefreshUI;
     }
 
     private void ApplyUserData()
@@ -46,7 +58,7 @@ public class VmController : MonoBehaviour
 
     #endregion
 
-
+    // Vm info Controller
     #region Info
     private void InitInfo()
     {
@@ -59,6 +71,7 @@ public class VmController : MonoBehaviour
     }
     #endregion
 
+    // Vm productList Controller
     #region ProductList
     private void InitProductList()
     {
@@ -130,6 +143,7 @@ public class VmController : MonoBehaviour
     }
     #endregion
 
+    // Money Controller
     #region Money
     private void InitMoney()
     {
@@ -166,6 +180,7 @@ public class VmController : MonoBehaviour
 
     #endregion
 
+    // Inventory Controller
     #region Inventory
     private void InitInventory()
     {
@@ -180,12 +195,6 @@ public class VmController : MonoBehaviour
 
     private void RefreshInventory(InventoryItem _item)
     {
-        if (!DataManager.Instance.IsActive)
-        {
-            LogManager.Instance.AddLog("Action blocked - Machine is inactive", LogState.Error);
-            return;
-        }
-
         ProductData data = DataManager.Instance.GetProduct(_item.productid);
 
         if (m_uiInventory.HasItem(_item.productid))
@@ -202,8 +211,6 @@ public class VmController : MonoBehaviour
             InventoryViewData inventoryData = new InventoryViewData() { productId = _item.productid, productName = data.name, productStock = _item.stock, productSprite = itemImg };
             m_uiInventory.Initialize(inventoryData);
         }
-
-        SaveInventory();
     }
 
     private void UseInventory(int _id)
@@ -243,9 +250,10 @@ public class VmController : MonoBehaviour
         DataManager.Instance.SetUserData_Money(money);
         DataManager.Instance.SaveUserData();
     }
-    
+
     #endregion
 
+    // Log Controller
     #region Log
     private void InitLog()
     {
@@ -253,6 +261,7 @@ public class VmController : MonoBehaviour
     }
     #endregion
 }
+
 
 [Serializable]
 public struct InfoViewData

@@ -1,4 +1,3 @@
-using NUnit.Framework;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
@@ -29,7 +28,13 @@ public class DataManager : MonoBehaviour
     public UserData UserData => m_userData;
     public bool IsActive => m_isActive;
 
-
+    private static readonly string[] IMAGE_EXTENSIONS =
+    {
+        ".png",
+        ".jpg",
+        ".jpeg",
+        ".webp"
+    };
 
     private void Awake()
     {
@@ -44,8 +49,8 @@ public class DataManager : MonoBehaviour
         LoadData();
     }
 
-    #region Load & Save
-
+    // Load & Save itemsData
+    #region ItemsData
     private void LoadData()
     {
         string jsonitems = LoadJsonItems();
@@ -103,12 +108,17 @@ public class DataManager : MonoBehaviour
         if (m_itemsData == null)
             return;
 
+        m_itemsData.updatedAt = System.DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ");
+
         string json = JsonUtility.ToJson(m_itemsData, true);
         File.WriteAllText(ItemDataPath, json);
 
         Debug.Log("Items Save Success : " + ItemDataPath);
     }
+    #endregion
 
+    // Load & Save userData
+    #region UserData
     private string LoadUserDatas()
     {
         if (File.Exists(UserDataPath))
@@ -122,8 +132,8 @@ public class DataManager : MonoBehaviour
 
     private void ParseUserData(string json)
     {
-        if (json == string.Empty)
-        { 
+        if (string.IsNullOrWhiteSpace(json))
+        {
             m_userData = new UserData();
             return;
         }
@@ -134,6 +144,9 @@ public class DataManager : MonoBehaviour
         {
             Debug.LogError("Items.json 파싱 실패");
         }
+
+        if (m_userData.inventoryItems == null)
+            m_userData.inventoryItems = new List<InventoryItem>();
     }
 
 
@@ -153,39 +166,86 @@ public class DataManager : MonoBehaviour
 
         Debug.Log("UserData Save Success : " + UserDataPath);
     }
+    #endregion
 
-    public Sprite LoadImg(string imagePath)
+    // Load Item Images
+    #region Img
+    public Sprite LoadImg(string imageUrl)
     {
-        string path = Path.Combine(Application.streamingAssetsPath,imagePath);
+        if (string.IsNullOrEmpty(imageUrl))
+            return null;
 
-        if (!File.Exists(path))
+        Sprite sprite = LoadSpriteFromPersistentPath(imageUrl);
+
+        if (sprite != null)
+            return sprite;
+
+        return LoadSpriteFromResources(imageUrl);
+    }
+
+    private string FindImageFilePath(string imageUrl)
+    {
+        string relativePath = imageUrl.Replace("\\", "/");
+        string path = Path.Combine(Application.persistentDataPath, relativePath);
+
+        if (File.Exists(path))
+            return path;
+
+        string extension = Path.GetExtension(path);
+
+        if (!string.IsNullOrEmpty(extension))
+            return string.Empty;
+
+        foreach (string ext in IMAGE_EXTENSIONS)
         {
-            Debug.LogWarning($"이미지 없음 : {path}");
+            string pathWithExt = path + ext;
 
-            // Fallback
-            return Resources.Load<Sprite>(Path.GetFileNameWithoutExtension(imagePath));
+            if (File.Exists(pathWithExt))
+                return pathWithExt;
         }
 
-        byte[] imageBytes = File.ReadAllBytes(path);
+        return string.Empty;
+    }
+
+    private Sprite LoadSpriteFromPersistentPath(string imageUrl)
+    {
+        string path = FindImageFilePath(imageUrl);
+
+        if (string.IsNullOrEmpty(path))
+            return null;
+
+        byte[] bytes = File.ReadAllBytes(path);
 
         Texture2D texture = new Texture2D(2, 2);
 
-        if (!texture.LoadImage(imageBytes))
+        if (!texture.LoadImage(bytes))
         {
-            Debug.LogError($"이미지 로드 실패 : {path}");
+            Debug.LogWarning("이미지 파일 로드 실패 : " + path);
             return null;
         }
 
         return Sprite.Create(
             texture,
             new Rect(0, 0, texture.width, texture.height),
-            new Vector2(0.5f, 0.5f),
-            100f);
+            new Vector2(0.5f, 0.5f)
+        );
+    }
+
+    private Sprite LoadSpriteFromResources(string imageUrl)
+    {
+        string fileName = Path.GetFileNameWithoutExtension(imageUrl);
+
+        Sprite sprite = Resources.Load<Sprite>(fileName);
+
+        if (sprite == null)
+            Debug.LogWarning("Resources 이미지 로드 실패 : " + fileName);
+
+        return sprite;
     }
     #endregion
 
-
-    #region function
+    // Function
+    #region Function
     public ProductData GetProduct(int _id)
     {
         foreach (ProductData data in m_itemsData.products)
